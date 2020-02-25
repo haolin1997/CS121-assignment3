@@ -27,6 +27,7 @@ class InvertedIndex():
         f = open('M1_Report.txt', 'a+')
         f.write("total_unique_tokens: " + str(len(self.map))+ '\n')
         f.write("total_unique_documents: " + str(i) + '\n')
+        f.write("total_disk_size: " + str(sys.getsizeof(self.map)) + '\n')
         #for word, posting in self.map.items():
             #print(str([p.get_posting() for p in posting]))
 
