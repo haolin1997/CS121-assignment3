@@ -1,0 +1,3 @@
+total_unique_tokens: 17273
+total_unique_documents: 1988
+total_disk_size: 589944 bytes (589.944 KB)
