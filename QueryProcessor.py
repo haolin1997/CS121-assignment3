@@ -18,7 +18,17 @@ class QueryProcessor():
         self.index =  np.load(str(index_file), allow_pickle='TRUE').item()
         self.all_results = list()
     
+
     def search(self,words):
+        """ the search component
+            print out the results for this query
+        """
+        result = self._process(words)
+        for doc in result.get():
+            print(str(self.doc_id[doc]) + '\n' )
+
+
+    def _process(self,words):
         """ get the query words as a list 
             process the query words, add result to all_result list
             return this single result as a result object
@@ -28,8 +38,14 @@ class QueryProcessor():
         
 
 
+
+
+
         self.all_results.append(result) 
         return result
+
+    
+
 
     def clear(self):
         """ delete all the previous results """
