@@ -1,6 +1,6 @@
 
-import Indexer as INDEX
-import QueryProcessor as QP
+from Indexer import *
+from QueryProcessor import QueryProcessor 
 import numpy as np
 
 
@@ -9,7 +9,7 @@ import numpy as np
 if __name__ == "__main__":
     
     
-    index = InvertedIndex()
+    index = Indexer()
     '''
     path = '/Users/Frank/Documents/GitHub/CS121-assignment3/DEV/aiclub_ics_uci_edu/8ef6d99d9f9264fc84514cdd2e680d35843785310331e1db4bbd06dd2b8eda9b.json'
     json_file = open(path).readlines()[0]
@@ -29,27 +29,10 @@ if __name__ == "__main__":
     f = open('M1_Report.txt', 'w')
     index.print_index('M1_Report.txt', i)
     
-    
-
 '''
-    doc_id_dict = np.load('my_file_doc.npy',allow_pickle='TRUE').item()
-    word_dict = np.load('my_file.npy', allow_pickle='TRUE').item()
     
-    print(word_dict['learning'][0].get_posting())
-    '''
-    words = ['machine', 'learning']
-    result_temp = []
-    result = []
+    query = input("Enter query: ")
 
-    for i in word_dict[words[0]]:
-        result_temp.append(i.get_posting()[0])
+    qp = QueryProcessor('my_file_doc.npy', 'my_file.npy')
 
-    for j in word_dict[words[1]]:
-        temp = j.get_posting()[0]
-        if temp in result_temp:
-            result.append(temp)
-
-
-    for i in range(len(result)):
-        print(doc_id_dict[result[i]])
-    '''
+    qp.search(query)

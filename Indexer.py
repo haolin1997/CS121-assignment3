@@ -3,6 +3,7 @@ import DataFetcher as DF
 from collections import defaultdict
 import json
 import numpy as np
+from nltk.stem import PorterStemmer
 
 
 class Indexer():
