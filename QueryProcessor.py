@@ -19,10 +19,9 @@ class QueryProcessor():
 
         self.doc_id = np.load(str(id_file),allow_pickle='TRUE').item()
         self.index =  np.load(str(index_file), allow_pickle='TRUE').item()
-        with open('doc_id.txt', 'w') as json_file:
-            json.dump(self.doc_id, json_file)
+        
         with open('index.txt','w') as json_file:
-            json.dump(self.index, json_file)
+            json.dump(self.index, json_file, cls=Posting)
    
         self.all_results = {}
     
