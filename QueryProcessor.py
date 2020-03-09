@@ -6,12 +6,12 @@ from string import ascii_lowercase
 from nltk.stem import PorterStemmer
 from operator import itemgetter
 
+TOTAL_UNIQUE_DOC = 55392
+
 class QueryProcessor():
     """ a query processor
         take the npy file and read it
         take the query words and process the query using the file
-        each time after processing the query, create a QueryResult object
-        and store them in all_result
     """ 
 
 
@@ -43,7 +43,6 @@ class QueryProcessor():
             #print(str(self.doc_id[doc[0]]) + ' ' + str(doc[1]) + '\n' )
 
 
-
     def _process(self,word, fp_num):
         """ get the query words as a list 
             process the query words, add result to all_result list
@@ -65,6 +64,22 @@ class QueryProcessor():
                 break
             if not line:
                 break
+    
+    def _query_score(self, query):
+        #trun the query into a dict
+        query_dict = defaultdict(int)
+        for term in query:
+            query_dict[term] += 1
+        #calculate the tf-idf score for query"""
+        for term in query:
+            tf = query_dict[term]/len(query)
+            term_in_doc = self.fp[ord(term[0])-97][term]
+            df = len(term_in_doc[term])
+            idf = math.log(TOTAL_UNIQUE_DOC/df)
+            tf_idf =  (1 + math.log(tf)) * idf
+        
+        return tf_idf
+        
         
     
 

@@ -1,6 +1,18 @@
 import math
 import numpy as np
 
+
+def CosSimilarity(query):
+    socres = list()
+    length = list()
+
+    for q in query:
+        
+
+
+
+
+"""
 class CosSimilarity():
     def __init__(self, query_v, doc_v):
         self.qv = query_v
@@ -24,5 +36,5 @@ class CosSimilarity():
             new_v[i] = v / length
 
         return new_v
-        
+"""  
         
