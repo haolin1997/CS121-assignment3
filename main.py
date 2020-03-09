@@ -11,7 +11,7 @@ if __name__ == "__main__":
     
     
     index = Indexer()
-    index.start_index()
+    #index.start_index()
     #query = input("Enter query: ")
 
     #qp = QueryProcessor('my_file_doc.npy', 'my_file.npy')
