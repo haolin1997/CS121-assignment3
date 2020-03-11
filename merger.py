@@ -41,8 +41,6 @@ if __name__ == "__main__":
         tokens[index] = json.loads(docs[index])
         index += 1
 
-    tf_idf_score(tokens[0])
-
     valid_i = [x for x in range(0, file_num)]
 
     
@@ -50,13 +48,13 @@ if __name__ == "__main__":
         
         token = min(list(tokens[x].keys())[0] for x in valid_i)
         
-        new_dict = defaultdict(list)
+        new_dict = {}
 
         for index in valid_i:
             if list(tokens[index].keys())[0] == token:
                 for element in tokens[index][token]:
                     new_dict[token].append(element)
-                    #print(new_dict[token])
+                    
                 #read next line of the partial index
                 docs[index] = fp[index].readline()
                 if not docs[index]:
@@ -69,8 +67,8 @@ if __name__ == "__main__":
   
         write_full_index(new_dict)
 
-        if not valid_i:
+        if valid_i == []: #If all index file become empty, terminate the while loop 
             break
                     
-        #new_dict = defaultdict
+
     
