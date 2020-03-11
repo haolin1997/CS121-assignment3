@@ -13,8 +13,6 @@ class QueryProcessor():
     """ a query processor
         take the npy file and read it
         take the query words and process the query using the file
-        each time after processing the query, create a QueryResult object
-        and store them in all_result
     """ 
 
     def __init__(self):
