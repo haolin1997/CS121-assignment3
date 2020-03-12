@@ -19,6 +19,7 @@ class Indexer():
         
     def __init__(self):
         self.map = defaultdict(list)
+        self.biword_map = defaultdict(list)
         self.map_doc_id = defaultdict(list)
         self.file_index = 0
     
@@ -30,15 +31,19 @@ class Indexer():
         html = json_object['content']
         df = DF(html)
         words = df.get_words()
+        biwords = df.get_biwords()
         positions = df.get_position()
         self.map_doc_id[index] = url
         for word, count in words.items():
             #idf = 1 + math.log(count,10)
             posting = Posting(index, word, count, positions[word])
-            
             self.map[word].append(posting)
+        for biword,count in biwords.items():
+            biword_posting = Posting(index, biword, count, 0)
+            self.biword_map[biword].append(biword_posting)
+        #print (len(biwords))
     
-    def save_partial_index(self, sort):
+    def save_partial_index(self, sort, sort_biword):
 
         with open("inverted_index_%s.txt" %self.file_index, 'w') as f:
             for key, values in sort:
@@ -46,25 +51,24 @@ class Indexer():
                 f.write(key_str)
                 json.dump([p.get_posting() for p in values], f)
                 f.write("}\n")
-
+        # save biword index
+        with open("inverted_biword_index_%s.txt" %self.file_index, 'w') as f:
+            for key, values in sort_biword:
+                key_str = '{"' + key + '":'
+                f.write(key_str)
+                json.dump([p.get_posting() for p in values], f)
+                f.write("}\n")
         self.file_index += 1
-    
-    def print_index(self, file, size):
 
-        f = open('M1_Report.txt', 'a+')
-        f.write("total_unique_tokens: " + str(len(self.map))+ '\n')
-        f.write("total_unique_documents: " + str(size) + '\n')
-        f.write("total_disk_size: " + str(sys.getsizeof(self.map)) + '\n')
-        for word, posting in self.map.items():
-            print(word + str( [p.get_posting() for p in posting]))
+    def save_partial_biword_index(self,sort):
+        with open("inverted_biword_index_%s.txt" %self.file_index, 'w') as f:
+            for key, values in sort:
+                key_str = '{"' + key + '":'
+                f.write(key_str)
+                json.dump([p.get_posting() for p in values], f)
+                f.write("}\n")
+        self.file_index += 1        
 
-        f.close()
-
-
-    def save_dictionary(self, file1, file2):
-        """ save the dictionary on outside file """
-        np.save(file1, self.map) 
-        np.save(file2, self.map_doc_id)
 
     def start_index(self):
 
@@ -90,8 +94,11 @@ class Indexer():
                     self.fetch_content(index, json_file)
                     if index in index_breakpoints or index == 55391:
                         temp = sorted(self.map.items())
-                        self.save_partial_index(temp)
+                        biword_temp = sorted(self.biword_map.items())
+                        self.save_partial_index(temp, biword_temp)
+                        #self.save_partial_biword_index(biword_temp)
                         self.map = defaultdict(list)
+                        self.biword_map = defaultdict(list)
                     index += 1
         
         #index.save_dictionary('my_file.npy', 'my_file_doc.npy')
