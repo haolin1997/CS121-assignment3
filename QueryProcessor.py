@@ -36,13 +36,25 @@ class QueryProcessor():
         """
         try:
             words = words.split()
+
             if len(words) == 2:
+
                 word = PorterStemmer().stem(words[0]) + ' ' + PorterStemmer().stem(words[1])
                 fp_num = ord(word[0]) - 97
                 self.search_biword(word, fp_num)
                 for doc in sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True):
                     self.urlid.append(doc[0])
-            if len(words) > 2  or (len(self.urlid) < 20 and len(words) == 2):
+
+            if len(words) == 3:
+
+                word = PorterStemmer().stem(words[0]) + ' ' + PorterStemmer().stem(words[1]) + ' ' + PorterStemmer().stem(words[2])
+                fp_num = ord(word[0]) - 97
+                self.search_triword(word, fp_num)
+                for doc in sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True):
+                    self.urlid.append(doc[0])
+
+            if len(words) > 3  or (len(self.urlid) < 20 and len(words) == 2) or (len(self.urlid) < 20 and len(words) == 3):
+                
                 self.clear_results()
                 self.query_tf_idf(words)
                 for word in words:
@@ -55,7 +67,7 @@ class QueryProcessor():
                 for doc in sorted(self.doc_score.items(), key = lambda kv:kv[1], reverse=True):
                     if doc[0] not in self.urlid:
                         self.urlid.append(doc[0])
-                    #self.urlid.extend(sorted(self.doc_score.items(), key = lambda kv:kv[1], reverse=True))
+                    
                     
             elif len(words) == 1:
                 fp_num = ord(words[0][0]) - 97
@@ -69,8 +81,32 @@ class QueryProcessor():
             return []
     
     def search_biword(self, word, fp_num):
-        #Search for the website contain the biwords
+        """
+        Search for the website contain the biwords
+        """
         fb = open("split_biword_file/split_biword_index_%s.txt"%ascii_lowercase[fp_num], 'r')
+        
+        while True:
+            word_dict = {}
+            line = fb.readline() #read the correct splited_index file
+            if word in line:
+                word_dict = json.loads(line)
+                if (list(word_dict.keys())[0]) != word:
+                    continue
+
+                for i in (sorted(word_dict[word], key=itemgetter(1), reverse=True)[:75]):
+                    if i[0] in self.all_results:
+                        self.all_results[i[0]] += i[1]
+                    else:
+                        self.all_results[i[0]] = i[1]  
+            if not line:
+                break
+
+    def search_triword(self, word, fp_num):
+        """
+        Search for the website contain the triwords
+        """
+        fb = open("split_triword_file/split_triword_index_%s.txt"%ascii_lowercase[fp_num], 'r')
         
         while True:
             word_dict = {}

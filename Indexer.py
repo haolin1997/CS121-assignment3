@@ -111,6 +111,7 @@ class Indexer():
                         self.save_partial_index(temp, biword_temp,triword_temp)
                         self.map = defaultdict(list)
                         self.biword_map = defaultdict(list)
+                        self.triword_map = defaultdict(list)
                     if index == 55393:
                         self.save_doc_id()
 

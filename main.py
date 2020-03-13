@@ -12,11 +12,11 @@ if __name__ == "__main__":
     
     
     index = Indexer()
-    index.start_index()
+    #index.start_index()
     #index.fetch_one('DEV/www_ics_uci_edu/c5e335113ce9586786ca7683a414cf6de2521b7789542455375e46ebba2c3ddb.json')
     #index.find_file('https://www.ics.uci.edu/~aburtsev/143A/lectures/lecture03-calling-conventions/')
    
-    """
+  
     query = input("Enter query: ")
     start_time = time.time() #Return the time to start the search 
     qp = QueryProcessor() 
@@ -36,4 +36,4 @@ if __name__ == "__main__":
     total_time = time.time() - start_time #The total time used to complete the search
     time_str = "The search took time %f seconds" % (total_time)
     print(time_str)
-    """
+ 

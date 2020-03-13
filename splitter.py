@@ -26,15 +26,19 @@ def splitter(fileloc, mode):
             if mode == 'biword':
                 with open('split_biword_file/split_biword_index_%s.txt'%current_letter, 'a') as split:
                     split.write(line)
-            else:
+            elif mode == 'triword':
+                with open("split_triword_file/split_triword_index_%s.txt" %current_letter, 'a+') as split:
+                    split.write(line)
+            elif mode == 'reg':
                 with open('split_index_file/split_index_%s.txt'%current_letter, 'a') as split:
                     split.write(line)
                 
 
 if __name__ == "__main__":
 
-    splitter('full_biword_index.txt', 'biword')
-    splitter('full_index.txt','reg')
+    #splitter('full_biword_index.txt', 'biword')
+    splitter('full_triword_index.txt', 'triword')
+    #splitter('full_index.txt','reg')
 
     
         

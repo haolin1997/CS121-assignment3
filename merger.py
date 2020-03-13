@@ -89,6 +89,8 @@ def merge(filename, mode):
             write_full_index_biword(new_dict)
         elif mode == 'reg':
             write_full_index(new_dict)
+        elif mode == 'triword':
+            write_full_index_triword(new_dict)
         else:
             print("please enter a valid mode")
             break
@@ -105,9 +107,9 @@ if __name__ == "__main__":
     docs = [None] * 12
     tokens = [None] * 12
 
-    fp = [open("inverted_biword_index_file/inverted_biword_index_%s.txt"%x, 'r') for x in range(0,file_num)]
-
     merge("inverted_biword_index_file/inverted_biword_index_", "biword")
   
     merge("inverted_index_file/inverted_index_", "reg")
+
+    merge("inverted_triword_index_file/inverted_triword_index_", "triword")
         
