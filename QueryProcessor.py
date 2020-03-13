@@ -6,8 +6,9 @@ import math
 from string import ascii_lowercase
 from nltk.stem import PorterStemmer
 from operator import itemgetter
+import sys
 
-TOTAL_UNIQUE_DOC = 55392
+TOTAL_UNIQUE_DOC = 55393
 
 class QueryProcessor():
     """ a query processor
@@ -20,7 +21,7 @@ class QueryProcessor():
                 self.doc_id: "doc_id": "url"
                 self.index: "word": [Posting Objects]  
         """
-        self.fp = [open("split_index_%s.txt"%x, 'r') for x in ascii_lowercase]  #Open all the split_index_files simulataneously 
+        self.fp = [open("split_index_file/split_index_%s.txt"%x, 'r') for x in ascii_lowercase]  #Open all the split_index_files simulataneously 
         self.all_results = {}
         self.urlid = []
         self.query_dict = {}
@@ -33,25 +34,59 @@ class QueryProcessor():
         """ the search component
             print out the results for this query
         """
-        words = words.split()
-        if len(words) > 1:
-            self.query_tf_idf(words)
-            for word in words:
-                word = PorterStemmer().stem(word)
+        try:
+            words = words.split()
+            if len(words) == 2:
+                word = PorterStemmer().stem(words[0]) + ' ' + PorterStemmer().stem(words[1])
                 fp_num = ord(word[0]) - 97
-                self._process(word, fp_num)
-        
-            self.cosine_score()
-            self.urlid = sorted(self.doc_score.items(), key = lambda kv:kv[1], reverse=True)
+                self.search_biword(word, fp_num)
+                for doc in sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True):
+                    self.urlid.append(doc[0])
+            if len(words) > 2  or (len(self.urlid) < 20 and len(words) == 2):
+                self.clear_results()
+                self.query_tf_idf(words)
+                for word in words:
+                    word = PorterStemmer().stem(word)
+                    fp_num = ord(word[0]) - 97
+                    self._process(word, fp_num)
             
-        elif len(words) == 1:
-            fp_num = ord(words[0][0]) - 97
-            self.rank_single_word(words[0], fp_num)
-            self.urlid = sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True)
-        else:
-            return []
+                self.cosine_score()
+               
+                for doc in sorted(self.doc_score.items(), key = lambda kv:kv[1], reverse=True):
+                    if doc[0] not in self.urlid:
+                        self.urlid.append(doc[0])
+                    #self.urlid.extend(sorted(self.doc_score.items(), key = lambda kv:kv[1], reverse=True))
+                    
+            elif len(words) == 1:
+                fp_num = ord(words[0][0]) - 97
+                self.rank_single_word(words[0], fp_num)
+                for doc in sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True):
+                    self.urlid.append(doc[0])
+            
+            return self.urlid[:20]
 
-        return self.urlid[:20]
+        except:
+            return []
+    
+    def search_biword(self, word, fp_num):
+        #Search for the website contain the biwords
+        fb = open("split_biword_file/split_biword_index_%s.txt"%ascii_lowercase[fp_num], 'r')
+        
+        while True:
+            word_dict = {}
+            line = fb.readline() #read the correct splited_index file
+            if word in line:
+                word_dict = json.loads(line)
+                if (list(word_dict.keys())[0]) != word:
+                    continue
+
+                for i in (sorted(word_dict[word], key=itemgetter(1), reverse=True)[:75]):
+                    if i[0] in self.all_results:
+                        self.all_results[i[0]] += i[1]
+                    else:
+                        self.all_results[i[0]] = i[1]  
+            if not line:
+                break
     
     def rank_single_word(self, word, fp_num):
         
@@ -62,12 +97,13 @@ class QueryProcessor():
                 word_dict = json.loads(line)
                 if (list(word_dict.keys())[0]) != word:
                     continue
-                #print(word_dict)
-                for i in (sorted(word_dict[word], key=itemgetter(1), reverse=True)[:75]):
+                for i in (sorted(word_dict[word], key=itemgetter(1), reverse=True)):
+
                     if i[0] in self.all_results:
                         self.all_results[i[0]] += i[1]
                     else:
                         self.all_results[i[0]] = i[1]  
+                break
             if not line:
                 break
     
@@ -137,9 +173,10 @@ class QueryProcessor():
                         self.all_results[i[0]].update({word:i[1]})
                     else:
                         self.all_results[i[0]] = {word:i[1]}
-                    
+                break        
             if not line:
                 break
 
 
-    
+    def clear_results(self):
+        self.all_results = {}

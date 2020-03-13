@@ -2,10 +2,12 @@ import json
 import math
 from collections import defaultdict
 
-TOTAL_UNIQUE_DOC = 55392
+TOTAL_UNIQUE_DOC = 55393
 
 def tf_idf_score(tokens):
-
+    """
+    calculate the tf_idf_score for each token
+    """
     for token in tokens.keys():
         df = len(tokens[token])
         idf = math.log(TOTAL_UNIQUE_DOC/df)
@@ -17,21 +19,31 @@ def tf_idf_score(tokens):
     return tokens
 
 def write_full_index(tokens):
-
+    """
+    write the full single world index file
+    """
     with open("full_index.txt", "a") as f:
         json.dump(tokens, f)
         f.write("\n")
 
-if __name__ == "__main__":
-    
-    file_num = 13
+def write_full_index_biword(tokens):
+    """
+    write the full biword index file
+    """
+    with open("full_biword_index.txt", "a+") as f:
+        json.dump(tokens, f)
+        f.write("\n")
 
-    docs = [None] * 13
-    tokens = [None] * 13
+def merge(filename, mode):
+    """
+    Merge the inverted index file together
+    """
+    file_num = 12
 
-    merged_dict = defaultdict(list)
+    docs = [None] * 12
+    tokens = [None] * 12
 
-    fp = [open("inverted_index_%s.txt"%x, 'r') for x in range(0,file_num)]
+    fp = [open("%s%s.txt"%(filename,x), 'r') for x in range(0,file_num)]
     
     index = 0
     while index < file_num:
@@ -48,7 +60,7 @@ if __name__ == "__main__":
         
         token = min(list(tokens[x].keys())[0] for x in valid_i)
         
-        new_dict = {}
+        new_dict = {token:[]}
 
         for index in valid_i:
             if list(tokens[index].keys())[0] == token:
@@ -65,10 +77,29 @@ if __name__ == "__main__":
         
         new_dict = tf_idf_score(new_dict)
   
-        write_full_index(new_dict)
+        if mode == 'biword':
+            write_full_index_biword(new_dict)
+        elif mode == 'reg':
+            write_full_index(new_dict)
+        else:
+            print("please enter a valid mode")
+            break
 
         if valid_i == []: #If all index file become empty, terminate the while loop 
             break
-                    
+           
 
+
+if __name__ == "__main__":
     
+    file_num = 12
+
+    docs = [None] * 12
+    tokens = [None] * 12
+
+    fp = [open("inverted_biword_index_file/inverted_biword_index_%s.txt"%x, 'r') for x in range(0,file_num)]
+
+    merge("inverted_biword_index_file/inverted_biword_index_", "biword")
+  
+    merge("inverted_index_file/inverted_index_", "reg")
+        

@@ -2,14 +2,14 @@ import json
 import os
 import time
 
-def splitter():
+def splitter(fileloc, mode):
 
     """
     Split the full_index file to Split index
     to increase Query performance
     """
 
-    with open ('full_index.txt', 'r') as f:
+    with open (fileloc, 'r') as f:
         
         current_letter = 'a'
 
@@ -21,16 +21,20 @@ def splitter():
                 break
 
             if line[2] != current_letter:
-                track_letter[current_letter] = current_index
                 current_letter = line[2]
                 
-
-            with open('split_index_%s.txt'%current_letter, 'a') as split:
-                
-                split.write(line)
+            if mode == 'biword':
+                with open('split_biword_file/split_biword_index_%s.txt'%current_letter, 'a') as split:
+                    split.write(line)
+            else:
+                with open('split_index_file/split_index_%s.txt'%current_letter, 'a') as split:
+                    split.write(line)
                 
 
 if __name__ == "__main__":
 
-    splitter()
+    splitter('full_biword_index.txt', 'biword')
+    splitter('full_index.txt','reg')
+
+    
         

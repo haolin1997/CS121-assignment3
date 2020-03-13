@@ -7,6 +7,7 @@ from nltk.tokenize import word_tokenize
 import math
 import sys
 import os
+import time
 
 
 index_breakpoints = [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000]
@@ -20,8 +21,9 @@ class Indexer():
     def __init__(self):
         self.map = defaultdict(list)
         self.biword_map = defaultdict(list)
-        self.map_doc_id = defaultdict(list)
+        self.map_doc_id = {}
         self.file_index = 0
+        
     
     def fetch_content(self, index, json_string):
         """ fetch contents from given json string
@@ -51,6 +53,7 @@ class Indexer():
                 f.write(key_str)
                 json.dump([p.get_posting() for p in values], f)
                 f.write("}\n")
+
         # save biword index
         with open("inverted_biword_index_%s.txt" %self.file_index, 'w') as f:
             for key, values in sort_biword:
@@ -58,51 +61,63 @@ class Indexer():
                 f.write(key_str)
                 json.dump([p.get_posting() for p in values], f)
                 f.write("}\n")
-        self.file_index += 1
+        self.file_index += 1  
+    
+    def save_doc_id(self):
+        save_dict = json.dumps(self.map_doc_id)
+        f = open('doc_id.json', 'w')
+        f.write(save_dict)
+        f.close()
+        #with open("doc_id.txt", 'w') as f:
+            #f.write(str(self.map_doc_id))
 
-    def save_partial_biword_index(self,sort):
-        with open("inverted_biword_index_%s.txt" %self.file_index, 'w') as f:
-            for key, values in sort:
-                key_str = '{"' + key + '":'
-                f.write(key_str)
-                json.dump([p.get_posting() for p in values], f)
-                f.write("}\n")
-        self.file_index += 1        
-
+    def fetch_one(self, path):
+        json_file = open(path).readlines()[0]
+        self.fetch_content(46591, json_file)
+        for i, j in self.biword_map.items():
+            #print(i + ": " + str([x.get_posting() for x in j]))
+            print(json.dumps([p.get_posting() for p in j]))
 
     def start_index(self):
 
-        '''
-        path = '/Users/Frank/Documents/GitHub/CS121-assignment3/DEV/www_ics_uci_edu/7bca1e4120df36bda6087963c3a397d7f80f22b4029a3fa9b09d1930097ce354.json'
-        json_file = open(path).readlines()[0]
-        self.fetch_content(1, json_file)
-  
-        if self.file_index in index_breakpoints:
-            print(self.map)
-            temp = sorted(self.map.items())
-            self.save_partial_index(temp)
-            self.map = {}
-        '''
-        
         index = 0
         for directory in os.listdir('DEV'):
             if directory != '.DS_Store':
                 for filenames in os.listdir('DEV/' + directory):
+                    index += 1
                     path = 'DEV/'+ directory + '/' + filenames
                     json_file = open(path).readlines()[0]
                     print(path, index)    
                     self.fetch_content(index, json_file)
-                    if index in index_breakpoints or index == 55391:
+                    if index in index_breakpoints or index == 55393:
                         temp = sorted(self.map.items())
                         biword_temp = sorted(self.biword_map.items())
                         self.save_partial_index(temp, biword_temp)
-                        #self.save_partial_biword_index(biword_temp)
                         self.map = defaultdict(list)
                         self.biword_map = defaultdict(list)
+                    if index == 55393:
+                        self.save_doc_id()
+
+
+
+    def find_file(self, name):
+        index = 0
+        for directory in os.listdir('DEV'):
+            if directory != '.DS_Store':
+                for filenames in os.listdir('DEV/' + directory):
                     index += 1
-        
-        #index.save_dictionary('my_file.npy', 'my_file_doc.npy')
-    
+                    path = 'DEV/'+ directory + '/' + filenames
+                    json_file = open(path).readlines()[0]
+                    json_object = json.loads(json_file)
+                    url = json_object['url']
+                    self.map_doc_id[index] = url
+                    print(index)
+                    if index == 55393:
+                        self.save_doc_id()
+
+
+               
+                  
         
     
 
