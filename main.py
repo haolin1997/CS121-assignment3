@@ -11,12 +11,13 @@ from string import ascii_lowercase
 if __name__ == "__main__":
     
     
-    #index = Indexer()
-    #index.start_index()
+    index = Indexer()
+    index.start_index()
     
+    """
     query = input("Enter query: ")
     start_time = time.time() #Return the time to start the search 
-    qp = QueryProcessor()
+    qp = QueryProcessor() 
     urlid = qp.search(query)
     url_dict = {}
     if not urlid:
@@ -31,4 +32,4 @@ if __name__ == "__main__":
     total_time = time.time() - start_time #The total time used to complete the search
     time_str = "The search took time %f seconds" % (total_time)
     print(time_str)
-      
+    """
