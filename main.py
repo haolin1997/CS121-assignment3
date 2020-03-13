@@ -17,7 +17,7 @@ if __name__ == "__main__":
     query = input("Enter query: ")
     start_time = time.time() #Return the time to start the search 
     qp = QueryProcessor() 
-    urlid = qp.search(query)
+    urlid = qp.search(query.lower())
     temp = []
     if not urlid:
         print('no url find with given query')
