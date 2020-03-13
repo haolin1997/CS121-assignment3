@@ -21,6 +21,7 @@ class Indexer():
     def __init__(self):
         self.map = defaultdict(list)
         self.biword_map = defaultdict(list)
+        self.triword_map = defaultdict(list)
         self.map_doc_id = {}
         self.file_index = 0
         
@@ -34,6 +35,7 @@ class Indexer():
         df = DF(html)
         words = df.get_words()
         biwords = df.get_biwords()
+        triwords = df.get_triwords()
         positions = df.get_position()
         self.map_doc_id[index] = url
         for word, count in words.items():
@@ -43,17 +45,20 @@ class Indexer():
         for biword,count in biwords.items():
             biword_posting = Posting(index, biword, count, 0)
             self.biword_map[biword].append(biword_posting)
+        for triword, count in triwords.items():
+            triword_posting = Posting(index, triword, count, 0)
+            self.triword_map[triword].append(triword_posting)
+
         #print (len(biwords))
     
-    def save_partial_index(self, sort, sort_biword):
-
+    def save_partial_index(self, sort, sort_biword, sort_triword):
+        """
         with open("inverted_index_%s.txt" %self.file_index, 'w') as f:
             for key, values in sort:
                 key_str = '{"' + key + '":'
                 f.write(key_str)
                 json.dump([p.get_posting() for p in values], f)
                 f.write("}\n")
-
         # save biword index
         with open("inverted_biword_index_%s.txt" %self.file_index, 'w') as f:
             for key, values in sort_biword:
@@ -61,7 +66,17 @@ class Indexer():
                 f.write(key_str)
                 json.dump([p.get_posting() for p in values], f)
                 f.write("}\n")
+        """
+        # save triword index
+        with open("inverted_triword_index_%s.txt" %self.file_index, 'w') as f:
+            for key, values in sort_triword:
+                key_str = '{"' + key + '":'
+                f.write(key_str)
+                json.dump([p.get_posting() for p in values], f)
+                f.write("}\n")
+
         self.file_index += 1  
+
     
     def save_doc_id(self):
         save_dict = json.dumps(self.map_doc_id)
@@ -92,7 +107,8 @@ class Indexer():
                     if index in index_breakpoints or index == 55393:
                         temp = sorted(self.map.items())
                         biword_temp = sorted(self.biword_map.items())
-                        self.save_partial_index(temp, biword_temp)
+                        triword_temp = sorted(self.triword_map.items())
+                        self.save_partial_index(temp, biword_temp,triword_temp)
                         self.map = defaultdict(list)
                         self.biword_map = defaultdict(list)
                     if index == 55393:
