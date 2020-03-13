@@ -71,7 +71,7 @@ class QueryProcessor():
                     
             elif len(words) == 1:
                 fp_num = ord(words[0][0]) - 97
-                self.rank_single_word(words[0], fp_num)
+                self.rank_single_word(PorterStemmer().stem(words[0]), fp_num)
                 for doc in sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True):
                     self.urlid.append(doc[0])
             
