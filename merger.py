@@ -34,6 +34,14 @@ def write_full_index_biword(tokens):
         json.dump(tokens, f)
         f.write("\n")
 
+def write_full_index_triword(tokens):
+    """
+    write the full triword index file
+    """
+    with open("full_triword_index.txt", "a+") as f:
+        json.dump(tokens, f)
+        f.write("\n")
+
 def merge(filename, mode):
     """
     Merge the inverted index file together

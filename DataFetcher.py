@@ -13,6 +13,7 @@ class DataFetcher():
         self.html = html
         self.word_dict = defaultdict(int)
         self.biword_dict = defaultdict(int)
+        self.triword_dict = defaultdict(int)
         self.position_dict = defaultdict(list)
         #self.stopword = [word.rstrip('\n') for word in open('StopWord.txt', 'r').readlines()]
         self.stopword = []
@@ -49,6 +50,7 @@ class DataFetcher():
                     self.word_dict[word] += 1
                     if word in important:
                         self.word_dict[word] *= 2
+                    # biword index
                     if w < len(valid_line)-1:
                         next_word = valid_line[w+1]
                         biword = str(word) + " " + str(next_word)
@@ -56,7 +58,20 @@ class DataFetcher():
                         if word in important:
                             self.biword_dict[biword] *= 2
                         if next_word in important:
-                            self.biword_dict[biword] *= 2           
+                            self.biword_dict[biword] *= 2       
+                    # tri-word index
+                    if w < len(valid_line) -2:
+                        next_word = valid_line[w+1]
+                        next_next_word = valid_line[w+2]
+                        tri_word = str(word) + " " + str(next_word) + " " + str(next_next_word)
+                        self.triword_dict[tri_word] += 1
+                        if word in important:
+                            self.triword_dict[tri_word] *= 2
+                        if next_word in important:
+                            self.triword_dict[tri_word] *= 2
+                        if next_next_word in important:
+                            self.triword_dict[tri_word] *= 2
+
         # ============================================
         """
         i = 0
@@ -123,6 +138,9 @@ class DataFetcher():
 
     def get_biwords(self):
         return self.biword_dict
+
+    def get_triwords(self):
+        return self.triword_dict
 
     def get_position(self):
         """ return the position information of all words as a dict"""
