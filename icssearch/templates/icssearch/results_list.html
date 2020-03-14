@@ -1,0 +1,12 @@
+<ul class="search-results">
+	{% for item, url in items %}
+	<li>
+		<a href="{{ url }}">
+			<p class="is-size-5 has-text-link">{{ item }}</p>
+			<p>{{ item.snippet }}</p>
+			<p class="has-text-success">{{ url }}</p>
+		</a>
+	</li>
+	{% endfor %}
+</ul>
+<hr>
