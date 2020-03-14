@@ -91,7 +91,8 @@ class Indexer():
         self.fetch_content(46591, json_file)
         for i, j in self.biword_map.items():
             #print(i + ": " + str([x.get_posting() for x in j]))
-            print(json.dumps([p.get_posting() for p in j]))
+            #print(json.dumps([p.get_posting() for p in j]))
+            pass
 
     def start_index(self):
 
@@ -128,9 +129,11 @@ class Indexer():
                     json_object = json.loads(json_file)
                     url = json_object['url']
                     self.map_doc_id[index] = url
-                    print(index)
-                    if index == 55393:
-                        self.save_doc_id()
+                    if url == name:
+                        print(index, path)
+                    
+                    #if index == 55393:
+                        #self.save_doc_id()
 
 
                

@@ -31,6 +31,7 @@ class DataFetcher():
         soup = BeautifulSoup(self.html,'html.parser')
         for script in soup(["script","style"]): 
             script.extract()
+        #print(soup.find('a')['href'])
         text = soup.get_text()
         text = text.split(" ")
         important = self.get_important_words(soup, important)
@@ -73,45 +74,7 @@ class DataFetcher():
                             self.triword_dict[tri_word] *= 2
 
         # ============================================
-        """
-        i = 0
-        for line in text:
-            if line != '\n':
-                line = self._decode_line(line.lower())
-                line = line.split()
-                line_lenght = len(line)
-                for w in range(line_lenght):
-                    word = line[w]
-                    if w < line_lenght-1:
-                        next_word = line[w+1]
-                #for word in line:
-                        if self._is_valid_word(word):
-                            if ps.stem(word).isalnum():
-                                word = ps.stem(word)
-                                i += 1
-                                self.word_dict[word] += 1
-                            if word in important:
-                                self.word_dict[word] *= 2
-                        # ===do bi-word index ===
-                        #index = line.index(word) + 1
-                        #next_word = line[line.index(word)+1]
-                        if self._is_valid_word(next_word):
-                            biword = str(word+next_word)
-                            if ps.stem(next_word).isalnum():
-                                next_word = ps.stem(next_word)
-                                biword = str(word+" "+next_word)
-                                self.biword_dict[biword] += 1
-                            if word in important:
-                                self.biword_dict[biword] *= 2
-                            if next_word in important:
-                                self.biword_dict[biword] *= 2
-                        # =========================
-        """
-                        #If it is an important word, add more weights to it
-                        #if word not in self.position_dict.keys():
-                         #   self.position_dict[word] = [i]
-                        #else:
-                         #   self.position_dict[word].append(i)
+          
     def get_important_words(self, soup, important):
         try:
             for word in soup.title.string.split():

@@ -30,13 +30,12 @@ class SearchView(TemplateView):
             query = self.request.GET.get('q', '')
             start_time = time.time() #Return the time to start the search 
             qp = QueryProcessor() 
-            urlid = qp.search(query)
+            urlid = qp.search(query.lower())
             temp = []
             if not urlid:
                 print('no url find with given query')
             else:
-                #url_id = open('doc_id.txt', 'r').read()
-                #url_dict = eval(url_id)
+                
                 with open('doc_id.json', 'r') as url_id:
                     url_dict = json.load(url_id, strict=False)
                 for i, j in enumerate(urlid):
