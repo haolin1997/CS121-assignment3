@@ -75,7 +75,7 @@ class QueryProcessor():
                 for doc in sorted(self.all_results.items(), key = lambda kv:kv[1], reverse=True):
                     self.urlid.append(doc[0])
             
-            return self.urlid[:20]
+            return self.urlid
 
         except:
             return []

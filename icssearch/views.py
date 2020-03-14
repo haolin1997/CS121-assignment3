@@ -33,13 +33,19 @@ class SearchView(TemplateView):
             temp = []
             if not urlid:
                 print('no url find with given query')
-            else:
-                
+            else:                
                 with open('doc_id.json', 'r') as url_id:
                     url_dict = json.load(url_id, strict=False)
-                for i, j in enumerate(urlid):
-                    result_str = "#%3d: %s" %(i+1,url_dict[str(j)])
-                    results.append( (result_str, url_dict[str(j)]) )
+                index = 1
+                for i in urlid:
+                    try:
+                        if index > 20:
+                            break
+                        result_str = "#%3d: %s" %(index,url_dict[str(i)])
+                        results.append( (result_str, url_dict[str(i)]))
+                        index += 1
+                    except:
+                        pass
 
             total_time = time.time() - start_time #The total time used to complete the search
             #time_str = "The search took time %f seconds" % (total_time)

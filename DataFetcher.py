@@ -18,6 +18,7 @@ class DataFetcher():
         self.position_dict = defaultdict(list)
         self.checksum = 0
         self.fetch()
+       
 
 
     def fetch(self):
@@ -34,8 +35,9 @@ class DataFetcher():
         #print(soup.find('a')['href'])
         text = soup.get_text()
         ## calculate the check sum
-        self.checksum = hashlib.md5(text).hexdigest()
-        print (checksum)
+        
+        self.checksum = hashlib.md5(text.encode('utf-8')).hexdigest()
+        
         text = text.split(" ")
         important = self.get_important_words(soup, important)
         # =========================
@@ -75,6 +77,7 @@ class DataFetcher():
                             self.triword_dict[tri_word] *= 2
                         if next_next_word in important:
                             self.triword_dict[tri_word] *= 2
+      
         # ============================================
           
     def get_important_words(self, soup, important):
@@ -131,8 +134,7 @@ class DataFetcher():
     
     def _is_valid_word(self, word):
         one_letter = ["i", "a"]
-        if word in self.stopword:
-            return False
+
         if len(word) == 1 and word not in one_letter:
             return False
         return True

@@ -24,7 +24,8 @@ class Indexer():
         self.biword_map = defaultdict(list)
         self.triword_map = defaultdict(list)
         self.map_doc_id = {}
-        self.checksum_map = dict()
+        self.checksum_map = []
+        self.duplicate = []
         self.file_index = 0
         
     
@@ -91,6 +92,12 @@ class Indexer():
         #with open("doc_id.txt", 'w') as f:
             #f.write(str(self.map_doc_id))
 
+    def save_duplicate_id(self):
+        save_dict = json.dumps(self.duplicate)
+        f = open('duplicate.json', 'w')
+        f.write(save_dict)
+        f.close()
+
     def fetch_one(self, path):
         json_file = open(path).readlines()[0]
         self.fetch_content(46591, json_file)
@@ -110,6 +117,7 @@ class Indexer():
                     json_file = open(path).readlines()[0]
                     print(path, index)    
                     self.fetch_content(index, json_file)
+                    
                     if index in index_breakpoints or index == 55393:
                         temp = sorted(self.map.items())
                         biword_temp = sorted(self.biword_map.items())
@@ -118,9 +126,11 @@ class Indexer():
                         self.map = defaultdict(list)
                         self.biword_map = defaultdict(list)
                         self.triword_map = defaultdict(list)
+                  
                     if index == 55393:
                         self.save_doc_id()
-
+                        self.save_duplicate_id()
+                    
 
 
     def find_file(self, name):
@@ -145,23 +155,11 @@ class Indexer():
         """ if the checksum exist then add the doc id to the list
             if not, add this id as key and add checksum value to list[0]
         """
-        get = 0
-        for key_id, value_list in self.checksum_map.items():
-            if value_list[0] == checksum:
-                self.checksum_map[key_id].append(id)
-                get = 1
-
-        if get != 1:
-            self.checksum_map[id] = [checksum]
-
-
-
-               
-                  
+        if checksum not in self.checksum_map:
+            self.checksum_map.append(checksum)
+        else:
+            self.duplicate.append(id)
         
-    
-
-
 
 class Posting():
     """ the posting object. 
