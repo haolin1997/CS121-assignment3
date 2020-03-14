@@ -1,6 +1,5 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render
-from .utils import SearchResults
 from . import *
 import sys, os
 sys.path.append(os.path.abspath(os.path.join('..', 'config')))

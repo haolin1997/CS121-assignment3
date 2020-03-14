@@ -8,6 +8,7 @@ import math
 import sys
 import os
 import time
+import hashlib
 
 
 index_breakpoints = [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000]
@@ -23,10 +24,11 @@ class Indexer():
         self.biword_map = defaultdict(list)
         self.triword_map = defaultdict(list)
         self.map_doc_id = {}
+        self.checksum_map = dict()
         self.file_index = 0
         
     
-    def fetch_content(self, index, json_string):
+    def fetch_content(self, id, json_string):
         """ fetch contents from given json string
             store them in the index map """
         json_object = json.loads(json_string)
@@ -37,22 +39,25 @@ class Indexer():
         biwords = df.get_biwords()
         triwords = df.get_triwords()
         positions = df.get_position()
-        self.map_doc_id[index] = url
+        checksum = df.get_checksum()
+        # === check duplicate ===
+        self.check_duplicate(id, checksum)
+        # =======================
+        self.map_doc_id[id] = url
         for word, count in words.items():
-            #idf = 1 + math.log(count,10)
-            posting = Posting(index, word, count, positions[word])
+            posting = Posting(id, word, count, positions[word])
             self.map[word].append(posting)
         for biword,count in biwords.items():
-            biword_posting = Posting(index, biword, count, 0)
+            biword_posting = Posting(id, biword, count, 0)
             self.biword_map[biword].append(biword_posting)
         for triword, count in triwords.items():
-            triword_posting = Posting(index, triword, count, 0)
+            triword_posting = Posting(id, triword, count, 0)
             self.triword_map[triword].append(triword_posting)
 
         #print (len(biwords))
     
     def save_partial_index(self, sort, sort_biword, sort_triword):
-        """
+        
         with open("inverted_index_%s.txt" %self.file_index, 'w') as f:
             for key, values in sort:
                 key_str = '{"' + key + '":'
@@ -66,7 +71,7 @@ class Indexer():
                 f.write(key_str)
                 json.dump([p.get_posting() for p in values], f)
                 f.write("}\n")
-        """
+        
         # save triword index
         with open("inverted_triword_index_%s.txt" %self.file_index, 'w') as f:
             for key, values in sort_triword:
@@ -134,6 +139,21 @@ class Indexer():
                     
                     #if index == 55393:
                         #self.save_doc_id()
+
+
+    def check_duplicate(self, id, checksum):
+        """ if the checksum exist then add the doc id to the list
+            if not, add this id as key and add checksum value to list[0]
+        """
+        get = 0
+        for key_id, value_list in self.checksum_map.items():
+            if value_list[0] == checksum:
+                self.checksum_map[key_id].append(id)
+                get = 1
+
+        if get != 1:
+            self.checksum_map[id] = [checksum]
+
 
 
                

@@ -2,6 +2,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
+import hashlib
 
 ps = PorterStemmer()
 
@@ -15,8 +16,7 @@ class DataFetcher():
         self.biword_dict = defaultdict(int)
         self.triword_dict = defaultdict(int)
         self.position_dict = defaultdict(list)
-        #self.stopword = [word.rstrip('\n') for word in open('StopWord.txt', 'r').readlines()]
-        self.stopword = []
+        self.checksum = 0
         self.fetch()
 
 
@@ -33,6 +33,9 @@ class DataFetcher():
             script.extract()
         #print(soup.find('a')['href'])
         text = soup.get_text()
+        ## calculate the check sum
+        self.checksum = hashlib.md5(text).hexdigest()
+        print (checksum)
         text = text.split(" ")
         important = self.get_important_words(soup, important)
         # =========================
@@ -72,7 +75,6 @@ class DataFetcher():
                             self.triword_dict[tri_word] *= 2
                         if next_next_word in important:
                             self.triword_dict[tri_word] *= 2
-
         # ============================================
           
     def get_important_words(self, soup, important):
@@ -108,6 +110,10 @@ class DataFetcher():
     def get_position(self):
         """ return the position information of all words as a dict"""
         return self.position_dict
+    
+    def get_checksum(self):
+        """return the checksum value"""
+        return self.checksum
 
     def _decode_line(self, line):  
         for c in line:
