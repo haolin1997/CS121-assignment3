@@ -128,6 +128,8 @@ class Indexer():
                         self.triword_map = defaultdict(list)
                   
                     if index == 55393:
+                        for i in self.duplicate:
+                            del self.map_doc_id[str(i)]
                         self.save_doc_id()
                         self.save_duplicate_id()
                     
